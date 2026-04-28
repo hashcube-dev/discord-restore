@@ -34,7 +34,7 @@ nix run
 Well, my friends trashed our friend group discord server with around 40
 channels. Guess who cleaned up all of the channel names.
 
-### Couldn't this be used to nuke a discord server
+### Couldn't this be used to nuke a discord server?
 
 It could, but just don't do that.
 
