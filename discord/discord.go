@@ -8,7 +8,7 @@ type DiscordController struct{
 	session *discord.Session
 }
 
-func InitSession(token string) (DiscordController, error) {
+func New(token string) (DiscordController, error) {
 	var d DiscordController
 	s, err := discord.New(token)
 	if err != nil {

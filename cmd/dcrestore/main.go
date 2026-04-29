@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
+	"github.com/hashcube-dev/discord-restore/tui"
 )
 
 func main() {
-	fmt.Println("Hello World!")
+	tui.StartTea()
 }
