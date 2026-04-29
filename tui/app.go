@@ -96,6 +96,14 @@ func (m mainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case Auth:
 			m.Auth, cmd = m.Auth.Update(msg)
 		}
+	case AuthPass:
+		m.CurrentlyViewing = Save
+		m.Auth, cmd = m.Auth.Update(msg)
+	default: 
+		switch m.CurrentlyViewing {
+		case Auth:
+			m.Auth, cmd = m.Auth.Update(msg)
+		}
 	}
 
 	return m, tea.Batch(cmd)
