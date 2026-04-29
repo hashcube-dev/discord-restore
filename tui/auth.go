@@ -1,17 +1,14 @@
 package tui
 
 import (
-	"time"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/bubbles/v2/textinput"
-	"charm.land/bubbles/v2/spinner"
 	lipgloss "charm.land/lipgloss/v2"
 	"github.com/hashcube-dev/discord-restore/discord"
 )
 
 type authModel struct{
 	input textinput.Model
-	spinner spinner.Model
 	err error
 	width int
 	height int
@@ -20,9 +17,15 @@ type authModel struct{
 func AuthModel() authModel {
 	ti := textinput.New()
 	ti.Focus()
+	ti.Prompt = ""
 	ti.EchoMode = textinput.EchoPassword
+	ti.SetWidth(70)
 
-	return authModel{input: ti}
+	return authModel{
+		input: ti,
+		width: 35,
+		height: 20,
+	}
 }
 
 func (m authModel) Init() tea.Cmd {
@@ -36,29 +39,10 @@ func (m authModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.Key().Code {
 			case tea.KeyEnter:
-				disc := make(chan discord.DiscordController)
-				err := make(chan error)
-				defer close(disc)
-				defer close(err)
-				ticker := time.NewTicker(500 * time.Millisecond)
-
-				go func(dcCh chan discord.DiscordController, errCh chan error) {
-					dc, err := discord.New(m.input.Value())
-					dcCh <- dc
-					errCh <- err
-				}(disc, err)
-				loading:
-				for {
-					select {
-					case <-disc:
-						break loading
-					case <-ticker.C:
-						m.spinner.Tick()
-					}
-				}
-				dc = <-disc
-				if <-err != nil {
-					m.err = <-err
+				var err error
+				dc, err = discord.New(m.input.Value())
+				if err != nil {
+					m.err = err
 					return m, authFail()
 				}
 				return m, authPass()
@@ -74,6 +58,10 @@ func (m authModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m authModel) View() tea.View {
 	var v tea.View
+	var err string
+	if m.err != nil {
+		err = Error.Render(m.err.Error())
+	}
 	v.Content = Default.
 		Width(m.width).
 		Height(m.height).
@@ -81,8 +69,8 @@ func (m authModel) View() tea.View {
 		Render(Default.Border(lipgloss.RoundedBorder(), true).Padding(2).
 			Render(lipgloss.JoinVertical(lipgloss.Center,
 				Accented.Render("Enter Discord Token"),
-				Default.Render(m.input.View()),
-				Error.Render(m.err.Error()),
+				Accented.Border(lipgloss.RoundedBorder()).Render(m.input.View()),
+				err,
 			),
 		),
 	)

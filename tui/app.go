@@ -33,8 +33,8 @@ var Default lipgloss.Style
 type mainModel struct{
 	CurrentlyViewing Page
 
-	Auth authModel
-	Save saveModel
+	Auth tea.Model
+	Save tea.Model
 }
 
 func StartTea() {
@@ -67,7 +67,11 @@ func StartTea() {
 }
 
 func NewMainModel() tea.Model {
-	return mainModel{}
+	return mainModel{
+		CurrentlyViewing: Auth,
+
+		Auth: AuthModel(),
+  }
 }
 
 func (m mainModel) Init() tea.Cmd {
@@ -76,11 +80,33 @@ func (m mainModel) Init() tea.Cmd {
 
 func (m mainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
+	switch msgc := msg.(type) {
+	case tea.KeyMsg:
+		switch msgc.String() {
+		case "ctrl+q", "ctrl+c":
+			return m, tea.Quit
+		default:
+			switch m.CurrentlyViewing {
+			case Auth:
+				m.Auth, cmd = m.Auth.Update(msg)
+			}
+		}
+	case tea.WindowSizeMsg:
+		switch m.CurrentlyViewing {
+		case Auth:
+			m.Auth, cmd = m.Auth.Update(msg)
+		}
+	}
 
 	return m, tea.Batch(cmd)
 }
 
 func (m mainModel) View() tea.View {
 	var v tea.View
+	switch m.CurrentlyViewing {
+	case Auth:
+		v = m.Auth.View()
+	}
+	v.AltScreen = true
 	return v
 }

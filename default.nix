@@ -11,5 +11,5 @@ in
 buildGoModule {
   inherit pname name src;
 
-  vendorHash = "";
+  vendorHash = "sha256-8AJ/Big0vlc2iWlkY6k3K0xnP5Nw+9VjzQYcIYsmGTg=";
 }

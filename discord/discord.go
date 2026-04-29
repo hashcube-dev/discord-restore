@@ -15,7 +15,8 @@ func New(token string) (DiscordController, error) {
 		return d, err
 	}
 	d.session = s
-	return d, nil
+	_, err = d.session.User("@me")
+	return d, err
 }
 
 func (c *DiscordController) GetChannels(guild string) ([]*discord.Channel, error) {
