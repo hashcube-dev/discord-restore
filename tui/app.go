@@ -80,30 +80,21 @@ func (m mainModel) Init() tea.Cmd {
 
 func (m mainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
+	switch m.CurrentlyViewing {
+	case Auth:
+		m.Auth, cmd = m.Auth.Update(msg)
+	case Save:
+		m.Save, cmd = m.Save.Update(msg)
+	}
 	switch msgc := msg.(type) {
 	case tea.KeyMsg:
 		switch msgc.String() {
 		case "ctrl+q", "ctrl+c":
 			return m, tea.Quit
-		default:
-			switch m.CurrentlyViewing {
-			case Auth:
-				m.Auth, cmd = m.Auth.Update(msg)
-			}
-		}
-	case tea.WindowSizeMsg:
-		switch m.CurrentlyViewing {
-		case Auth:
-			m.Auth, cmd = m.Auth.Update(msg)
 		}
 	case AuthPass:
 		m.CurrentlyViewing = Save
-		m.Auth, cmd = m.Auth.Update(msg)
-	default: 
-		switch m.CurrentlyViewing {
-		case Auth:
-			m.Auth, cmd = m.Auth.Update(msg)
-		}
+		m.Save = SaveModel()
 	}
 
 	return m, tea.Batch(cmd)
@@ -114,6 +105,8 @@ func (m mainModel) View() tea.View {
 	switch m.CurrentlyViewing {
 	case Auth:
 		v = m.Auth.View()
+	case Save:
+		v = m.Save.View()
 	}
 	v.AltScreen = true
 	return v

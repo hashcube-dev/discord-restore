@@ -29,6 +29,11 @@ func (c *DiscordController) GetUsers(guild string) ([]*discord.Member, error) {
 	return members, err
 }
 
+func (c *DiscordController) GetUserGuilds() ([]*discord.UserGuild, error) {
+	ug, err := c.session.UserGuilds(200, "", "", false)
+	return ug, err
+} 
+
 func (c *DiscordController) ChangeNick(guild, user, nickname string) error {
 	err := c.session.GuildMemberNickname(guild, user, nickname)
 	return err
