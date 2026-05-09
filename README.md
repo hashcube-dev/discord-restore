@@ -3,6 +3,9 @@
 You ever get the urge to trash your Discord server but don't wanna have
 to do cleanup? Introducing `dcrestore`!
 
+> [!WARNING]
+> This project is now on infinite hiatus because I hate bubbletea lists
+
 ## Development
 
 Requirements:
